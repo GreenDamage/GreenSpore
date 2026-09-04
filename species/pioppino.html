@@ -1,1 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pioppino — GreenSpore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0f0a;
+    --bg-raised: #101710;
+    --ink: #e7ede6;
+    --ink-dim: #a9b7a6;
+    --spore-green: #5fd068;
+    --spore-green-deep: #2f7a3a;
+    --pioppino-brown: #b8875a;
+    --bark: #8a6644;
+    --line: #24312280;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  a{ color: var(--spore-green); text-decoration: none; }
+  a:hover{ text-decoration: underline; }
 
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  header.top{
+    padding: 20px 24px;
+    display:flex; align-items:center; gap: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .home{ font-size: 14px; color: var(--ink-dim); }
+  header.top .crumb{ font-size: 14px; color: var(--ink-dim); }
+  header.top .crumb b{ color: var(--ink); font-weight: 500; }
+
+  .hero{
+    padding: 56px 24px 40px;
+    text-align: left;
+  }
+  .kicker{
+    font-size: 15px;
+    color: var(--pioppino-brown);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    margin: 0 0 6px;
+  }
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(36px, 8vw, 56px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lede{
+    font-size: 18px;
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  section{ padding: 40px 24px; border-top: 1px solid var(--line); }
+  section h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    color: var(--spore-green);
+    margin: 0 0 18px;
+  }
+  section p{ max-width: 62ch; color: var(--ink); margin: 0 0 14px; }
+  section p:last-child{ margin-bottom: 0; }
+
+  .facts{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .fact{
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .fact .label{ font-size: 12px; color: var(--ink-dim); margin-bottom: 4px; }
+  .fact .value{ font-size: 16px; color: var(--ink); font-weight: 500; }
+
+  .cycle-diagram{ margin: 8px 0 28px; }
+  .cycle-diagram svg{ width: 100%; height: auto; display:block; }
+
+  .stage-list{ counter-reset: stage; }
+  .stage{
+    display:grid;
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage:first-child{ border-top: none; }
+  .stage .num{
+    counter-increment: stage;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--spore-green-deep);
+  }
+  .stage .num::before{ content: counter(stage); }
+  .stage h3{
+    font-size: 17px;
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  .stage p{ margin:0; font-size: 15px; color: var(--ink-dim); }
+
+  footer{
+    padding: 32px 24px 48px;
+    text-align:center;
+    color: var(--ink-dim);
+    font-size: 14px;
+  }
+  footer a{ color: var(--spore-green); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="home" href="../index.html">← GreenSpore</a>
+  <span class="crumb">What We Grow / <b>Pioppino</b></span>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <p class="kicker">Cyclocybe aegerita</p>
+    <h1>Pioppino</h1>
+    <p class="lede">A rich, earthy mushroom that grows in dense clusters on poplar wood — also known as the black poplar mushroom, prized for its firm texture and nutty flavor.</p>
+  </div>
+
+  <section>
+    <h2>What it is</h2>
+    <p>Pioppino grows in tight, dense clusters of slender caps and long stems, ranging from dark chestnut brown when young to a lighter tan as they mature. The name comes from the Italian word for poplar ("pioppo"), the tree it's most associated with in the wild.</p>
+    <p>It's a white-rot fungus, meaning it breaks down both the lignin and cellulose in wood, leaving behind a soft, bleached residue. In nature it fruits on dead and dying poplar, willow, and elm, usually at the base of trunks or on buried roots. Its firm texture holds up well to cooking, which is part of why it's popular in cultivation.</p>
+    <div class="facts">
+      <div class="fact"><div class="label">Family</div><div class="value">Strophariaceae</div></div>
+      <div class="fact"><div class="label">Habitat</div><div class="value">Poplar &amp; willow wood</div></div>
+      <div class="fact"><div class="label">Feeding type</div><div class="value">White-rot saprotroph</div></div>
+      <div class="fact"><div class="label">Growth style</div><div class="value">Dense clusters</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The life cycle</h2>
+    <div class="cycle-diagram">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="300" r="220" fill="none" stroke="#24312280" stroke-width="2" stroke-dasharray="4 8"/>
+        <g font-family="Inter, sans-serif" font-size="15" fill="#e7ede6">
+          <circle cx="300" cy="80" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="300" y="86" text-anchor="middle" font-weight="600">Spore</text>
+          <circle cx="490" cy="220" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="490" y="216" text-anchor="middle" font-weight="600">Germin-</text>
+          <text x="490" y="234" text-anchor="middle" font-weight="600">ation</text>
+          <circle cx="420" cy="440" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="420" y="436" text-anchor="middle" font-weight="600">Myce-</text>
+          <text x="420" y="454" text-anchor="middle" font-weight="600">lium</text>
+          <circle cx="180" cy="440" r="34" fill="#101710" stroke="#b8875a" stroke-width="2"/>
+          <text x="180" y="436" text-anchor="middle" font-weight="600">Primor-</text>
+          <text x="180" y="454" text-anchor="middle" font-weight="600">dia</text>
+          <circle cx="110" cy="220" r="34" fill="#101710" stroke="#b8875a" stroke-width="2"/>
+          <text x="110" y="216" text-anchor="middle" font-weight="600">Fruiting</text>
+          <text x="110" y="234" text-anchor="middle" font-weight="600">Body</text>
+          <circle cx="300" cy="300" r="40" fill="#101710" stroke="#8a6644" stroke-width="2"/>
+          <text x="300" y="296" text-anchor="middle" font-weight="600" font-size="14">Sporula-</text>
+          <text x="300" y="313" text-anchor="middle" font-weight="600" font-size="14">tion</text>
+        </g>
+        <g stroke="#5fd06880" stroke-width="2" fill="none" marker-end="url(#arrow)">
+          <path d="M 328 92 A 220 220 0 0 1 468 198"/>
+          <path d="M 470 250 A 220 220 0 0 1 442 412"/>
+          <path d="M 392 458 A 220 220 0 0 1 208 458"/>
+          <path d="M 158 412 A 220 220 0 0 1 130 250"/>
+          <path d="M 132 198 A 220 220 0 0 1 272 92"/>
+        </g>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#5fd06880"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="stage-list">
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Spore release</h3>
+          <p>A mature Pioppino cap releases spores from gills on its underside. Because the mushrooms fruit in dense clusters, a single cluster can release a large volume of spores at once, drifting off in search of exposed poplar or willow wood.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Germination</h3>
+          <p>A spore landing on suitable wood germinates and sends out a hypha. As with other mushrooms, that single thread needs to fuse with a compatible hypha from another spore before real growth can begin.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Mycelium</h3>
+          <p>The fused mycelium spreads through the wood as a white-rot organism, breaking down both lignin and cellulose. This slowly bleaches and softens the wood as the network expands and stores up energy for fruiting.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Primordia</h3>
+          <p>Once the substrate is fully colonized and triggered by a change in conditions — typically cooler temperatures and higher humidity — the mycelium forms clusters of small primordia rather than single pins, setting up the dense bouquets Pioppino is known for.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Fruiting body</h3>
+          <p>The primordia expand into slender-stemmed, dark brown-capped mushrooms, growing in a tight cluster from a shared base. Caps lighten as they open and mature, and the cluster is typically harvested whole at once.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Sporulation</h3>
+          <p>As the caps fully open, their gills release a new generation of spores and the cycle repeats. In cultivation, this stage overlaps with peak harvest — clusters are cut before the caps flatten and spore drop is heaviest.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Growing conditions and step-by-step cultivation instructions for Pioppino are coming soon.<br>
+    <a href="../index.html">← Back to GreenSpore</a>
+  </footer>
+
+</div>
+</body>
+</html>
