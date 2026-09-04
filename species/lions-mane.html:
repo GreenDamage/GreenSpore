@@ -1,1 +1,251 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lion's Mane — GreenSpore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0f0a;
+    --bg-raised: #101710;
+    --ink: #e7ede6;
+    --ink-dim: #a9b7a6;
+    --spore-green: #5fd068;
+    --spore-green-deep: #2f7a3a;
+    --mane-cream: #ece4d3;
+    --bark: #8a6644;
+    --line: #24312280;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  a{ color: var(--spore-green); text-decoration: none; }
+  a:hover{ text-decoration: underline; }
+
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  header.top{
+    padding: 20px 24px;
+    display:flex; align-items:center; gap: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .home{ font-size: 14px; color: var(--ink-dim); }
+  header.top .crumb{ font-size: 14px; color: var(--ink-dim); }
+  header.top .crumb b{ color: var(--ink); font-weight: 500; }
+
+  .hero{
+    padding: 56px 24px 40px;
+    text-align: left;
+  }
+  .kicker{
+    font-size: 15px;
+    color: var(--mane-cream);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+    margin: 0 0 6px;
+  }
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(36px, 8vw, 56px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    color: var(--ink);
+  }
+  .lede{
+    font-size: 18px;
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  section{ padding: 40px 24px; border-top: 1px solid var(--line); }
+  section h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    color: var(--spore-green);
+    margin: 0 0 18px;
+  }
+  section p{ max-width: 62ch; color: var(--ink); margin: 0 0 14px; }
+  section p:last-child{ margin-bottom: 0; }
+
+  .facts{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .fact{
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .fact .label{ font-size: 12px; color: var(--ink-dim); margin-bottom: 4px; }
+  .fact .value{ font-size: 16px; color: var(--ink); font-weight: 500; }
+
+  .cycle-diagram{ margin: 8px 0 28px; }
+  .cycle-diagram svg{ width: 100%; height: auto; display:block; }
+
+  .stage-list{ counter-reset: stage; }
+  .stage{
+    display:grid;
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .stage:first-child{ border-top: none; }
+  .stage .num{
+    counter-increment: stage;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--spore-green-deep);
+  }
+  .stage .num::before{ content: counter(stage); }
+  .stage h3{
+    font-size: 17px;
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  .stage p{ margin:0; font-size: 15px; color: var(--ink-dim); }
+
+  footer{
+    padding: 32px 24px 48px;
+    text-align:center;
+    color: var(--ink-dim);
+    font-size: 14px;
+  }
+  footer a{ color: var(--spore-green); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="home" href="../index.html">← GreenSpore</a>
+  <span class="crumb">What We Grow / <b>Lion's Mane</b></span>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <p class="kicker">Hericium erinaceus</p>
+    <h1>Lion's Mane</h1>
+    <p class="lede">A shaggy, white, pom-pom-shaped mushroom made of cascading spines instead of gills — one of the most recognizable and sought-after mushrooms in cultivation.</p>
+  </div>
+
+  <section>
+    <h2>What it is</h2>
+    <p>Lion's Mane grows as a single rounded mass of long, icicle-like spines that hang downward, giving it a shaggy, white, fur-like appearance that's easy to spot and hard to mistake for anything else. Unlike most mushrooms, it has no cap or stem in the usual sense — the whole fruiting body is one clump of tissue covered in spines.</p>
+    <p>It belongs to a group called "tooth fungi," named for those spines, which take the place of gills or pores. In the wild, it grows on the wounds of living hardwood trees or on recently dead logs and stumps — beech, oak, and maple are common hosts. It behaves as both a saprotroph, feeding on dead wood, and a weak parasite, colonizing injured living trees through cracks or wounds in the bark.</p>
+    <div class="facts">
+      <div class="fact"><div class="label">Family</div><div class="value">Hericiaceae</div></div>
+      <div class="fact"><div class="label">Habitat</div><div class="value">Hardwood wounds &amp; logs</div></div>
+      <div class="fact"><div class="label">Feeding type</div><div class="value">Saprotroph / weak parasite</div></div>
+      <div class="fact"><div class="label">Growth style</div><div class="value">Single spined mass</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The life cycle</h2>
+    <div class="cycle-diagram">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="300" r="220" fill="none" stroke="#24312280" stroke-width="2" stroke-dasharray="4 8"/>
+        <g font-family="Inter, sans-serif" font-size="15" fill="#e7ede6">
+          <circle cx="300" cy="80" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="300" y="86" text-anchor="middle" font-weight="600">Spore</text>
+          <circle cx="490" cy="220" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="490" y="216" text-anchor="middle" font-weight="600">Germin-</text>
+          <text x="490" y="234" text-anchor="middle" font-weight="600">ation</text>
+          <circle cx="420" cy="440" r="34" fill="#101710" stroke="#5fd068" stroke-width="2"/>
+          <text x="420" y="436" text-anchor="middle" font-weight="600">Myce-</text>
+          <text x="420" y="454" text-anchor="middle" font-weight="600">lium</text>
+          <circle cx="180" cy="440" r="34" fill="#101710" stroke="#ece4d3" stroke-width="2"/>
+          <text x="180" y="436" text-anchor="middle" font-weight="600" fill="#0a0f0a">Primor-</text>
+          <text x="180" y="454" text-anchor="middle" font-weight="600" fill="#0a0f0a">dium</text>
+          <circle cx="110" cy="220" r="34" fill="#101710" stroke="#ece4d3" stroke-width="2"/>
+          <text x="110" y="216" text-anchor="middle" font-weight="600">Fruiting</text>
+          <text x="110" y="234" text-anchor="middle" font-weight="600">Body</text>
+          <circle cx="300" cy="300" r="40" fill="#101710" stroke="#8a6644" stroke-width="2"/>
+          <text x="300" y="296" text-anchor="middle" font-weight="600" font-size="14">Sporula-</text>
+          <text x="300" y="313" text-anchor="middle" font-weight="600" font-size="14">tion</text>
+        </g>
+        <g stroke="#5fd06880" stroke-width="2" fill="none" marker-end="url(#arrow)">
+          <path d="M 328 92 A 220 220 0 0 1 468 198"/>
+          <path d="M 470 250 A 220 220 0 0 1 442 412"/>
+          <path d="M 392 458 A 220 220 0 0 1 208 458"/>
+          <path d="M 158 412 A 220 220 0 0 1 130 250"/>
+          <path d="M 132 198 A 220 220 0 0 1 272 92"/>
+        </g>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#5fd06880"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="stage-list">
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Spore release</h3>
+          <p>Unlike gilled mushrooms, Lion's Mane produces spores on the surface of its hanging spines rather than inside gills. A mature fruiting body sheds a fine white dusting of spores that drift on air currents in search of a wound or crack in hardwood.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Germination</h3>
+          <p>A spore that lands in a favorable spot — typically the exposed, damaged wood of a hardwood tree — germinates and sends out a hypha, a single fine thread. It needs to meet and fuse with a compatible hypha from another spore before it can grow further.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Mycelium</h3>
+          <p>Once two compatible hyphae fuse, the resulting mycelium spreads through the heartwood, breaking down the wood's structure and absorbing nutrients. This stage can take considerably longer for Lion's Mane than for faster-colonizing species like oysters.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Primordium</h3>
+          <p>Once the mycelium is well established and conditions shift — cooler temperatures, higher humidity, a burst of fresh air — it forms a single small knot of tissue at the wound site. Unlike clustering species, Lion's Mane typically produces one primordium at a time rather than many.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Fruiting body</h3>
+          <p>The primordium swells into the recognizable white, shaggy mass, growing spines as it matures. Good humidity and airflow keep the spines long and the color bright white; the mushroom is usually harvested just before the spines begin to yellow.</p>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="num"></div>
+        <div>
+          <h3>Sporulation</h3>
+          <p>As the fruiting body fully matures, its spines release a new generation of spores into the air, and the cycle begins again. Left unharvested, a mature Lion's Mane will visibly develop a fine white spore dust on and beneath it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Growing conditions and step-by-step cultivation instructions for Lion's Mane are coming soon.<br>
+    <a href="../index.html">← Back to GreenSpore</a>
+  </footer>
+
+</div>
+</body>
+</html>
