@@ -81,6 +81,30 @@
  background: #102016;
  text-align: center;
 }
+ .play {
+ width: 44px;
+ height: 44px;
+ border: 2px solid #69d36f;
+ border-radius: 50%;
+ background: #07110a;
+ color: #69d36f;
+ cursor: pointer;
+ display: inline-grid;
+ place-items: center;
+ padding: 0;
+ transition: background 0.15s ease, color 0.15s ease;
+ }
+ .play:hover, .play.playing { background: #69d36f; color: #07110a; }
+ .play svg { width: 18px; height: 18px; fill: currentColor; }
+ .play .i-pause { display: none; }
+ .play.playing .i-play { display: none; }
+ .play.playing .i-pause { display: block; }
+ .hero .play { margin: 0 auto 25px; display: grid; }
+ .about .play { margin: 0 auto 10px; display: grid; }
+ .card-wrap { position: relative; }
+ .card-wrap .card { height: 100%; }
+ .card-wrap .card h3 { padding-right: 50px; }
+ .card-wrap .play { position: absolute; top: 18px; right: 18px; }
  footer {
  padding: 30px 20px;
  text-align: center;
@@ -98,6 +122,7 @@
  <p class="intro">
  Fresh gourmet mushrooms, grown locally with care.
  </p>
+ <button class="play" data-src="audio/intro.mp3" aria-label="Play intro"></button>
  <a class="button" href="#mushrooms">See What We Grow</a>
  </div>
  </header>
@@ -105,26 +130,39 @@
  <section id="mushrooms">
  <h2>What We Grow</h2>
  <div class="cards">
+ <div class="card-wrap">
  <a class="card" href="species/oyster-mushrooms.html">
  <h3>Oyster Mushrooms</h3>
  <p>Fresh, tender mushrooms with excellent flavour and texture.</p>
  </a>
+ <button class="play" data-src="audio/oyster.mp3" aria-label="Play oyster mushrooms"></button>
+ </div>
+ <div class="card-wrap">
  <a class="card" href="species/lions-mane.html">
  <h3>Lion's Mane</h3>
  <p>A distinctive gourmet mushroom with a firm, delicate bite.</p>
  </a>
+ <button class="play" data-src="audio/lions-mane.mp3" aria-label="Play lion's mane"></button>
+ </div>
+ <div class="card-wrap">
  <a class="card" href="species/pioppino.html">
  <h3>Pioppino</h3>
  <p>A rich, earthy mushroom suited to many meals.</p>
  </a>
+ <button class="play" data-src="audio/pioppino.mp3" aria-label="Play pioppino"></button>
+ </div>
+ <div class="card-wrap">
   <a class="card" href="species/shiitake.html">
  <h3>Shiitake</h3>
  <p>A rich, savoury mushroom with a meaty cap and deep flavour.</p>
   </a>
+ <button class="play" data-src="audio/shiitake.mp3" aria-label="Play shiitake"></button>
+ </div>
  </div>
  </section>
  <section class="about">
  <h2>Locally Grown</h2>
+ <button class="play" data-src="audio/locally-grown.mp3" aria-label="Play locally grown"></button>
  <p>
  GreenSpore is building a reliable local supply of fresh gourmet
  mushrooms for restaurants and the community.
@@ -134,6 +172,31 @@
  <footer>
  <p>GreenSpore &bull; IT ALL STARTS WITH A SPORE.</p>
  </footer>
+ <script>
+ (function () {
+ var icons = '<svg class="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>' +
+ '<svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+ var audio = new Audio();
+ var current = null;
+ function stop() {
+ if (current) current.classList.remove('playing');
+ current = null;
+ }
+ audio.addEventListener('ended', stop);
+ document.querySelectorAll('.play').forEach(function (btn) {
+ btn.innerHTML = icons;
+ btn.addEventListener('click', function (e) {
+ e.preventDefault();
+ e.stopPropagation();
+ if (current === btn) { audio.pause(); stop(); return; }
+ stop();
+ audio.src = btn.getAttribute('data-src');
+ audio.play();
+ current = btn;
+ btn.classList.add('playing');
+ });
+ });
+ })();
+ </script>
 </body>
-</htm
- 
+</html
