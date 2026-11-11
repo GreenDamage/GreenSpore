@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Photo to Line Art</title>
+<script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.min.js"></script>
+<style>
+:root {
+  --bg: #f5f5f0; --fg: #1a1a1a; --card: #ffffff; --border: #d8d8d0;
+  --accent: #2a5d3c; --accent-fg: #ffffff; --muted: #6b6b63;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15160f; --fg: #eceadd; --card: #1f2118; --border: #353726;
+    --accent: #6fae84; --accent-fg: #0d1008; --muted: #9a9a8c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15160f; --fg: #eceadd; --card: #1f2118; --border: #353726;
+  --accent: #6fae84; --accent-fg: #0d1008; --muted: #9a9a8c;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 1rem; max-width: 720px; margin-inline: auto;
+}
+h1 { font-size: 1.25rem; margin: 0.25rem 0 1rem; }
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem; margin-bottom: 1rem;
+}
+button, label.btn {
+  display: inline-block; background: var(--accent); color: var(--accent-fg);
+  border: none; border-radius: 8px; padding: 0.7rem 1.1rem; font-size: 1rem;
+  font-weight: 600; cursor: pointer; text-align: center; width: 100%;
+}
+button:disabled { opacity: 0.5; }
+input[type=file] {
+  display: block; width: 100%; font-size: 1rem; color: var(--fg);
+  background: var(--card); border: 2px dashed var(--accent); border-radius: 8px;
+  padding: 0.9rem; margin-top: 0.1rem;
+}
+input[type=file]::file-selector-button {
+  background: var(--accent); color: var(--accent-fg); border: none;
+  border-radius: 6px; padding: 0.5rem 0.9rem; font-weight: 600; margin-right: 0.7rem;
+}
+.row { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
+.row > * { flex: 1; }
+.slider-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.75rem; }
+.slider-row label { font-size: 0.85rem; color: var(--muted); min-width: 6.5rem; }
+input[type=range] { width: 100%; }
+.preview-wrap {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.75rem;
+}
+.preview-wrap figure { margin: 0; }
+.preview-wrap figcaption { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 0.3rem; }
+canvas, .svg-box {
+  width: 100%; border-radius: 8px; border: 1px solid var(--border); background: #fff; display: block;
+}
+.svg-box { overflow: auto; max-height: 260px; }
+.svg-box svg { width: 100%; height: auto; display: block; }
+.layer-row {
+  display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.layer-row:last-child { border-bottom: none; }
+.swatch { width: 1.6rem; height: 1.6rem; border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0; }
+.layer-thumb { width: 3rem; height: 3rem; border: 1px solid var(--border); border-radius: 4px; background: #fff; flex-shrink: 0; overflow: hidden; }
+.layer-thumb svg { width: 100%; height: 100%; }
+.layer-info { flex: 1; font-size: 0.85rem; color: var(--muted); }
+.layer-dl {
+  background: var(--accent); color: var(--accent-fg); border: none; border-radius: 6px;
+  padding: 0.4rem 0.7rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; width: auto;
+}
+.muted { color: var(--muted); font-size: 0.85rem; }
+.status { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; min-height: 1.1em; }
+</style>
+</head>
+<body>
+<h1>Photo &rarr; Line Art Vector</h1>
+
+<div class="card">
+  <p class="muted" style="margin-top:0">Take a photo, dial in the threshold, get an SVG of traced outlines for the plotter.</p>
+  <p class="muted" style="margin:0.6rem 0 0.2rem">Take a photo (front camera, for selfies)</p>
+  <input id="camFront" type="file" accept="image/*" capture="user">
+  <p class="muted" style="margin:0.8rem 0 0.2rem">Take a photo (back camera)</p>
+  <input id="camBack" type="file" accept="image/*" capture="environment">
+  <p class="muted" style="margin:0.8rem 0 0.2rem">Or pick one from your gallery</p>
+  <input id="camInput" type="file" accept="image/*">
+  <div class="status" id="status"></div>
+</div>
+
+<div class="card" id="controls" style="display:none">
+  <div class="slider-row">
+    <label for="thresh" id="threshLabel">Detail (higher = fewer lines)</label>
+    <input type="range" id="thresh" min="0" max="255" value="60">
+    <span id="threshVal" class="muted">60</span>
+  </div>
+  <div class="slider-row">
+    <label for="edgeMode">Mode</label>
+    <select id="edgeMode" style="flex:1;padding:0.4rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--fg)">
+      <option value="sketch" selected>Sketch (handles uneven light)</option>
+      <option value="edge">Edges only (B/W)</option>
+      <option value="tone">Light/dark regions (B/W)</option>
+      <option value="color">Full color</option>
+    </select>
+  </div>
+  <div class="row">
+    <button id="downloadBtn" disabled>Download SVG</button>
+  </div>
+</div>
+
+<div class="preview-wrap" id="previews" style="display:none">
+  <figure>
+    <canvas id="srcCanvas"></canvas>
+    <figcaption>Original</figcaption>
+  </figure>
+  <figure>
+    <canvas id="procCanvas"></canvas>
+    <figcaption>Processed (B/W)</figcaption>
+  </figure>
+</div>
+
+<div class="card" id="svgCard" style="display:none">
+  <p class="muted" style="margin-top:0">Vector result (SVG)</p>
+  <div class="svg-box" id="svgBox"></div>
+</div>
+
+<div class="card" id="layersCard" style="display:none">
+  <p class="muted" style="margin-top:0">Color legend — each is its own layer inside the one SVG above</p>
+  <div id="layersList"></div>
+</div>
+
+<script>
+const camInput = document.getElementById('camInput');
+const status = document.getElementById('status');
+const controls = document.getElementById('controls');
+const previews = document.getElementById('previews');
+const srcCanvas = document.getElementById('srcCanvas');
+const procCanvas = document.getElementById('procCanvas');
+const thresh = document.getElementById('thresh');
+const threshVal = document.getElementById('threshVal');
+const edgeMode = document.getElementById('edgeMode');
+const svgCard = document.getElementById('svgCard');
+const svgBox = document.getElementById('svgBox');
+const downloadBtn = document.getElementById('downloadBtn');
+const layersCard = document.getElementById('layersCard');
+const layersList = document.getElementById('layersList');
+
+let srcImageData = null;
+let sketchCache = null;
+let lastSvgString = null;
+let downloadsCap = null;
+
+try {
+  if (window.claude && window.claude.use) {
+    window.claude.use('downloads').then(d => { downloadsCap = d; }).catch(() => {});
+  }
+} catch (e) { /* not running inside the artifact viewer - fine */ }
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  status.textContent = 'Loading photo...';
+  const img = new Image();
+  img.onload = () => {
+    const maxDim = 900;
+    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    srcCanvas.width = w; srcCanvas.height = h;
+    procCanvas.width = w; procCanvas.height = h;
+    const sctx = srcCanvas.getContext('2d');
+    sctx.drawImage(img, 0, 0, w, h);
+    srcImageData = sctx.getImageData(0, 0, w, h);
+    sketchCache = null;
+    previews.style.display = 'grid';
+    controls.style.display = 'block';
+    status.textContent = 'Tracing your photo... a few seconds.';
+    setTimeout(process, 50);
+  };
+  img.onerror = () => { status.textContent = 'Could not read that photo — try another.'; };
+  img.src = URL.createObjectURL(file);
+}
+['camFront', 'camBack', 'camInput'].forEach((id) => {
+  document.getElementById(id).addEventListener('change', handlePhoto);
+});
+
+const threshLabel = document.getElementById('threshLabel');
+
+thresh.addEventListener('input', () => { threshVal.textContent = thresh.value; process(); });
+edgeMode.addEventListener('change', () => {
+  if (edgeMode.value === 'color') {
+    threshLabel.textContent = 'Colors';
+    thresh.min = 2; thresh.max = 32;
+    if (thresh.value < 2 || thresh.value > 32) thresh.value = 8;
+  } else if (edgeMode.value === 'sketch') {
+    threshLabel.textContent = 'Detail (higher = fewer lines)';
+    thresh.min = 0; thresh.max = 255;
+    thresh.value = 60;
+  } else {
+    threshLabel.textContent = 'Threshold';
+    thresh.min = 0; thresh.max = 255;
+    if (thresh.value < 50) thresh.value = 128;
+  }
+  threshVal.textContent = thresh.value;
+  process();
+});
+
+function gaussBlur(src, w, h, sigma) {
+  const r = Math.max(1, Math.ceil(sigma * 3));
+  const k = new Float32Array(2 * r + 1);
+  let sum = 0;
+  for (let i = -r; i <= r; i++) { k[i + r] = Math.exp(-(i * i) / (2 * sigma * sigma)); sum += k[i + r]; }
+  for (let i = 0; i < k.length; i++) k[i] /= sum;
+  const tmp = new Float32Array(w * h);
+  const out = new Float32Array(w * h);
+  const kl = k.length;
+  for (let y = 0; y < h; y++) {
+    const row = y * w;
+    for (let x = 0; x < w; x++) {
+      let s = 0;
+      if (x >= r && x < w - r) {
+        const base = row + x - r;
+        for (let i = 0; i < kl; i++) s += src[base + i] * k[i];
+      } else {
+        for (let i = -r; i <= r; i++) {
+          const xx = x + i < 0 ? 0 : (x + i > w - 1 ? w - 1 : x + i);
+          s += src[row + xx] * k[i + r];
+        }
+      }
+      tmp[row + x] = s;
+    }
+  }
+  for (let y = 0; y < h; y++) {
+    const inner = y >= r && y < h - r;
+    for (let x = 0; x < w; x++) {
+      let s = 0;
+      if (inner) {
+        const base = (y - r) * w + x;
+        for (let i = 0; i < kl; i++) s += tmp[base + i * w] * k[i];
+      } else {
+        for (let i = -r; i <= r; i++) {
+          const yy = y + i < 0 ? 0 : (y + i > h - 1 ? h - 1 : y + i);
+          s += tmp[yy * w + x] * k[i + r];
+        }
+      }
+      out[y * w + x] = s;
+    }
+  }
+  return out;
+}
+
+// Sketch mode: flatten uneven lighting first, then pull lines out with a
+// difference-of-Gaussians, so shadows and bright spots stop breaking the trace.
+// The slow part runs ONCE per photo (prepareSketch); the slider only re-thresholds.
+function prepareSketch(gray, w, h) {
+  // Lighting estimate is computed on a shrunken copy (1/8 size) - it's a smooth
+  // blur anyway - then stretched back up. This is what keeps it fast on a phone.
+  const f = 8;
+  const sw = Math.ceil(w / f), sh = Math.ceil(h / f);
+  const small = new Float32Array(sw * sh);
+  for (let y = 0; y < sh; y++) {
+    for (let x = 0; x < sw; x++) {
+      let s = 0, n = 0;
+      const yEnd = Math.min(h, y * f + f), xEnd = Math.min(w, x * f + f);
+      for (let yy = y * f; yy < yEnd; yy++) {
+        for (let xx = x * f; xx < xEnd; xx++) { s += gray[yy * w + xx]; n++; }
+      }
+      small[y * sw + x] = s / n;
+    }
+  }
+  const smallBlur = gaussBlur(small, sw, sh, Math.max(12, Math.min(w, h) / 25) / f);
+  const norm = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) {
+    const fy = Math.min(sh - 1, Math.max(0, (y + 0.5) / f - 0.5));
+    const y0 = Math.floor(fy), y1 = Math.min(sh - 1, y0 + 1), ty = fy - y0;
+    for (let x = 0; x < w; x++) {
+      const fx = Math.min(sw - 1, Math.max(0, (x + 0.5) / f - 0.5));
+      const x0 = Math.floor(fx), x1 = Math.min(sw - 1, x0 + 1), tx = fx - x0;
+      const il = (smallBlur[y0 * sw + x0] * (1 - tx) + smallBlur[y0 * sw + x1] * tx) * (1 - ty) +
+                 (smallBlur[y1 * sw + x0] * (1 - tx) + smallBlur[y1 * sw + x1] * tx) * ty;
+      norm[y * w + x] = Math.min(255, Math.max(0, (gray[y * w + x] / (il + 8)) * 128));
+    }
+  }
+  const a = gaussBlur(norm, w, h, 1.2);
+  const b = gaussBlur(norm, w, h, 2.0);
+  const d = new Float32Array(w * h);
+  let mean = 0;
+  for (let i = 0; i < d.length; i++) { d[i] = a[i] - 0.98 * b[i]; mean += d[i]; }
+  mean /= d.length;
+  let varSum = 0;
+  for (let i = 0; i < d.length; i++) { const e = d[i] - mean; varSum += e * e; }
+  const std = Math.sqrt(varSum / d.length) || 1;
+  return { d, mean, std };
+}
+
+function sketchMask(cache, w, h, t) {
+  const k = 0.1 + (t / 255) * 2.0;
+  const cut = cache.mean - k * cache.std;
+  const mask = new Uint8Array(w * h);
+  for (let i = 0; i < mask.length; i++) mask[i] = cache.d[i] < cut ? 1 : 0;
+  return mask;
+}
+
+function sobel(gray, w, h) {
+  const out = new Uint8ClampedArray(w * h);
+  const gx = [-1,0,1,-2,0,2,-1,0,1];
+  const gy = [-1,-2,-1,0,0,0,1,2,1];
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      let sx = 0, sy = 0, k = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const v = gray[(y + dy) * w + (x + dx)];
+          sx += v * gx[k]; sy += v * gy[k]; k++;
+        }
+      }
+      out[y * w + x] = Math.min(255, Math.sqrt(sx * sx + sy * sy));
+    }
+  }
+  return out;
+}
+
+function process() {
+  if (!srcImageData) return;
+  const w = srcImageData.width, h = srcImageData.height;
+  const mode = edgeMode.value;
+  const pctx = procCanvas.getContext('2d');
+
+  if (mode === 'color') {
+    const numColors = parseInt(thresh.value, 10);
+    const out = pctx.createImageData(w, h);
+    out.data.set(srcImageData.data);
+    pctx.putImageData(out, 0, 0);
+    try {
+      const tracerOpts = { ltres: 1, qtres: 1, pathomit: 4, numberofcolors: numColors,
+        colorsampling: 1, mincolorratio: 0.02, scale: 1, strokewidth: 0 };
+      const tracedata = ImageTracer.imagedataToTracedata(out, tracerOpts);
+      const { svg: layeredSvg, legend } = buildLayeredSVG(tracedata, tracerOpts);
+      lastSvgString = layeredSvg;
+      svgBox.innerHTML = layeredSvg;
+      svgCard.style.display = 'block';
+      downloadBtn.disabled = false;
+      renderLayerLegend(legend);
+      status.textContent = 'Full-color vector traced — one SVG, ' + legend.length + ' color layers inside.';
+    } catch (err) {
+      status.textContent = 'Vectorizing failed on this image — try fewer colors.';
+      downloadBtn.disabled = true;
+      layersCard.style.display = 'none';
+    }
+    return;
+  }
+
+  const data = srcImageData.data;
+  const gray = new Uint8ClampedArray(w * h);
+  for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+    gray[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+  layersCard.style.display = 'none';
+  const t = parseInt(thresh.value, 10);
+  let field = null;
+  let sketch = null;
+  if (mode === 'sketch') {
+    if (!sketchCache) sketchCache = prepareSketch(gray, w, h);
+    sketch = sketchMask(sketchCache, w, h, t);
+  }
+  else field = mode === 'edge' ? sobel(gray, w, h) : gray;
+
+  const out = pctx.createImageData(w, h);
+  for (let p = 0; p < w * h; p++) {
+    let on;
+    if (mode === 'sketch') on = sketch[p] === 1;
+    else if (mode === 'edge') on = field[p] > t;
+    else on = field[p] < t;
+    const v = on ? 0 : 255;
+    out.data[p * 4] = v; out.data[p * 4 + 1] = v; out.data[p * 4 + 2] = v; out.data[p * 4 + 3] = 255;
+  }
+  pctx.putImageData(out, 0, 0);
+
+  try {
+    const tracerOpts = { ltres: 1, qtres: 1, pathomit: 8, numberofcolors: 2,
+      colorsampling: 1, mincolorratio: 0, scale: 1, strokewidth: 0, linefilter: true };
+    const svgStr = ImageTracer.imagedataToSVG(out, tracerOpts);
+    lastSvgString = svgStr;
+    svgBox.innerHTML = svgStr;
+    svgCard.style.display = 'block';
+    downloadBtn.disabled = false;
+    status.textContent = 'Vectorized. This is what would go to the AxiDraw.';
+  } catch (err) {
+    status.textContent = 'Vectorizing failed on this image — try a simpler photo or adjust threshold.';
+    downloadBtn.disabled = true;
+  }
+}
+
+async function downloadSVGString(svgStr, filename) {
+  if (downloadsCap) {
+    try {
+      await downloadsCap.save({ filename, data: svgStr });
+      return true;
+    } catch (err) {
+      status.textContent = 'Save was cancelled or unavailable.';
+      return false;
+    }
+  }
+  try {
+    const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+  } catch (err) {
+    status.textContent = 'Download failed — long-press the SVG and save it manually instead.';
+    return false;
+  }
+}
+
+downloadBtn.addEventListener('click', async () => {
+  if (!lastSvgString) return;
+  const ok = await downloadSVGString(lastSvgString, 'traced-line-art.svg');
+  if (ok) status.textContent = 'SVG downloaded.';
+});
+
+function buildLayeredSVG(tracedata, options) {
+  const w = tracedata.width, h = tracedata.height;
+  let groups = '';
+  const legend = [];
+  for (let k = 0; k < tracedata.layers.length; k++) {
+    const layer = tracedata.layers[k];
+    if (!layer || layer.length === 0) continue;
+    let body = '';
+    for (let p = 0; p < layer.length; p++) {
+      body += ImageTracer.svgpathstring(tracedata, k, p, options);
+    }
+    if (!body.trim()) continue;
+    const c = tracedata.palette[k];
+    const hex = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+    groups += '<g id="layer-' + k + '" inkscape:groupmode="layer" inkscape:label="' + hex +
+      '" data-color="' + hex + '">' + body + '</g>';
+    legend.push({ hex, pathCount: layer.length });
+  }
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" ' +
+    'width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + groups + '</svg>';
+  return { svg, legend };
+}
+
+function renderLayerLegend(legend) {
+  layersList.innerHTML = '';
+  legend.forEach((L) => {
+    const row = document.createElement('div');
+    row.className = 'layer-row';
+    row.innerHTML =
+      '<div class="swatch" style="background:' + L.hex + '"></div>' +
+      '<div class="layer-info">' + L.hex + ' &middot; ' + L.pathCount + ' path' + (L.pathCount === 1 ? '' : 's') +
+      ' &middot; layer "' + L.hex + '" in the SVG</div>';
+    layersList.appendChild(row);
+  });
+  layersCard.style.display = legend.length ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
